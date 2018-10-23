@@ -14,7 +14,7 @@
 #    limitations under the License.
 import pygame
 
-SIZE = SCREENWIDTH, SCREENHEIGHT = 600, 400
+SIZE = SCREENWIDTH, SCREENHEIGHT = 505, 440
 BACKGROUND_COLOR = (125, 125, 255)
 FPS = 4
 
@@ -33,7 +33,7 @@ class Tile(pygame.sprite.Sprite):
         self.rect.move_ip(x, y)
 
     def set_player(self, p):
-        if p in range(0, len(pygame.image)):
+        if p in range(0, len(self.images)):
             self.index = p
             self.image = self.images[self.index]
         else:
@@ -64,18 +64,18 @@ def main():
     pygame.init()
     FPS_CLOCK = pygame.time.Clock()
     SCREEN = pygame.display.set_mode(SIZE)
-    done = False
     init_game_board()
 
-    while not done:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                done = True
                 pygame.quit()
                 quit()
+                break
 
         SCREEN.fill(BACKGROUND_COLOR)
         GAME_BOARD.draw(SCREEN)
+        GAME_BOARD.update()
         pygame.display.update()
         FPS_CLOCK.tick(FPS)
 
