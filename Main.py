@@ -17,6 +17,8 @@ import pygame
 SIZE = SCREENWIDTH, SCREENHEIGHT = 505, 440
 BACKGROUND_COLOR = (27, 109, 167)
 FPS = 4
+CURRENT_PLAYER = 1
+MAX_PLAYERS = 2
 
 
 class Tile(pygame.sprite.Sprite):
@@ -34,8 +36,8 @@ class Tile(pygame.sprite.Sprite):
             pygame.image.load("assets/sprites/red.png"),
             pygame.image.load("assets/sprites/yellow.png")
         ]
-        self.index = 0
-        self.image = self.images[self.index]
+        self.player = 0
+        self.image = self.images[self.player]
         self.rect = self.image.get_rect()
         self.rect.move_ip(
             pos_multiplier * x + pos_multiplier / 2,
@@ -44,23 +46,46 @@ class Tile(pygame.sprite.Sprite):
 
     def set_player(self, p):
         if p in range(0, len(self.images)):
-            self.index = p
-            self.image = self.images[self.index]
+            self.player = p
+            self.image = self.images[self.player]
         else:
             raise ValueError("Unexpected value type: " + type(p))
 
     def update(self, *args):
         super().update(*args)
 
+    def on_click(self):
+        global CURRENT_PLAYER, ROW_COUNT
+        for y in range(ROW_COUNT - 1, -1, -1):
+            tile = get_tile_by_pos(self.x, y)
+            if tile.player == 0:
+                tile.set_player(CURRENT_PLAYER)
+                CURRENT_PLAYER = (CURRENT_PLAYER % MAX_PLAYERS) + 1
+                print("Next turn: Player ", CURRENT_PLAYER)
+                break
+
 
 def init_game_board():
-    global GAME_BOARD
-    column_count = 7
-    row_count = 6
+    global GAME_BOARD, COLUMN_COUNT, ROW_COUNT
+    COLUMN_COUNT = 7
+    ROW_COUNT = 6
 
     GAME_BOARD = pygame.sprite.Group(
-        Tile(x=x, y=y) for x in range(0, column_count) for y in range(0, row_count)
+        Tile(x=x, y=y) for x in range(0, COLUMN_COUNT) for y in range(0, ROW_COUNT)
     )
+    print("First turn: Player 1")
+
+
+def get_tile_by_x(x):
+    return [tile for tile in GAME_BOARD if tile.x == x]
+
+
+def get_tile_by_y(y):
+    return [tile for tile in GAME_BOARD if tile.y == y]
+
+
+def get_tile_by_pos(x, y):
+    return [tile for tile in GAME_BOARD if tile.y == y and tile.x == x][0]
 
 
 def main():
@@ -72,6 +97,9 @@ def main():
 
     while True:
         for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                [s.on_click() for s in GAME_BOARD if s.rect.collidepoint(pos)]
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
