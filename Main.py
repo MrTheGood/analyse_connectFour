@@ -60,6 +60,55 @@ class Tile(pygame.sprite.Sprite):
             tile = get_tile_by_pos(self.x, y)
             if tile.player == 0:
                 tile.set_player(CURRENT_PLAYER)
+
+                x1 = 0
+                x2 = 0
+                x3 = 0
+                x4 = 0
+                for t in GAME_BOARD:
+                    # \
+                    if t.x + t.y == tile.x + tile.y:
+                        if t.player == CURRENT_PLAYER:
+                            x1 = x1 + 1
+                            if x1 >= 4:
+                                print("Player", CURRENT_PLAYER, "has won! Congrats!")
+                                pygame.quit()
+                                quit()
+                        else:
+                            x1 = 0
+
+                    # /
+                    if t.x - t.y == tile.x - tile.y:
+                        if t.player == CURRENT_PLAYER:
+                            x2 = x2 + 1
+                            if x2 >= 4:
+                                print("Player", CURRENT_PLAYER, "has won! Congrats!")
+                                pygame.quit()
+                                quit()
+                        else:
+                            x2 = 0
+
+                    # |
+                    if t.x == tile.x:
+                        if t.player == CURRENT_PLAYER:
+                            x3 = x3 + 1
+                            if x3 >= 4:
+                                print("Player", CURRENT_PLAYER, "has won! Congrats!")
+                                pygame.quit()
+                                quit()
+                        else:
+                            x3 = 0
+
+                    # -
+                    if t.y == tile.y:
+                        if t.player == CURRENT_PLAYER:
+                            x4 = x4 + 1
+                            if x4 >= 4:
+                                print("Player", CURRENT_PLAYER, "has won! Congrats!")
+                                pygame.quit()
+                                quit()
+                        else:
+                            x4 = 0
                 CURRENT_PLAYER = (CURRENT_PLAYER % MAX_PLAYERS) + 1
                 print("Next turn: Player ", CURRENT_PLAYER)
                 break
