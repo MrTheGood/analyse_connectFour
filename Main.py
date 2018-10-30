@@ -17,7 +17,6 @@ import pygame
 BACKGROUND_COLOR = (27, 109, 167)
 FPS = 4
 CURRENT_PLAYER = 1
-MAX_PLAYERS = 2
 
 
 def num_input(text, min, max):
@@ -36,6 +35,7 @@ SIZE = SCREENWIDTH, SCREENHEIGHT = 60 + 65 * COLUMN_COUNT, 60 + 65 * ROW_COUNT
 
 WIN_CONDITION = num_input("How many in a row to win? (default 4)", 1,
                           COLUMN_COUNT if (COLUMN_COUNT > ROW_COUNT) else ROW_COUNT)
+MAX_PLAYERS = num_input("How many players? (default 2)", 2, 7)
 
 
 class Tile(pygame.sprite.Sprite):
@@ -51,7 +51,12 @@ class Tile(pygame.sprite.Sprite):
         self.images = [
             pygame.image.load("assets/sprites/white.png"),
             pygame.image.load("assets/sprites/red.png"),
-            pygame.image.load("assets/sprites/yellow.png")
+            pygame.image.load("assets/sprites/yellow.png"),
+            pygame.image.load("assets/sprites/green.png"),
+            pygame.image.load("assets/sprites/cyan.png"),
+            pygame.image.load("assets/sprites/orange.png"),
+            pygame.image.load("assets/sprites/pink.png"),
+            pygame.image.load("assets/sprites/purple.png")
         ]
         self.player = 0
         self.image = self.images[self.player]
