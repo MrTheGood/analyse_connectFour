@@ -14,11 +14,27 @@
 #    limitations under the License.
 import pygame
 
-SIZE = SCREENWIDTH, SCREENHEIGHT = 505, 440
 BACKGROUND_COLOR = (27, 109, 167)
 FPS = 4
 CURRENT_PLAYER = 1
 MAX_PLAYERS = 2
+
+
+def num_input(text, min, max):
+    print(text)
+    inp = input()
+    while not inp.isdigit() or int(inp) < min or int(inp) > max:
+        print("Invalid input! Should be a number with a min value of", min, "and max", max)
+        inp = input(text)
+    return int(inp)
+
+
+COLUMN_COUNT = num_input("How many columns? (default 7)", 1, 20)
+ROW_COUNT = num_input("How many rows? (default 6)", 1, 20)
+SIZE = SCREENWIDTH, SCREENHEIGHT = 72 * COLUMN_COUNT, 72 * ROW_COUNT
+
+WIN_CONDITION = num_input("How many in a row to win? (default 4)", 1,
+                          COLUMN_COUNT if (COLUMN_COUNT > ROW_COUNT) else ROW_COUNT)
 
 
 class Tile(pygame.sprite.Sprite):
@@ -80,7 +96,7 @@ def check_win(tiles):
     for t in tiles:
         if t.player == CURRENT_PLAYER:
             x = x + 1
-            if x >= 4:
+            if x >= WIN_CONDITION:
                 print("Player", CURRENT_PLAYER, "has won! Congrats!")
                 pygame.quit()
                 quit()
@@ -90,9 +106,6 @@ def check_win(tiles):
 
 def init_game_board():
     global GAME_BOARD, COLUMN_COUNT, ROW_COUNT
-    COLUMN_COUNT = 7
-    ROW_COUNT = 6
-
     GAME_BOARD = pygame.sprite.Group(
         Tile(x=x, y=y) for x in range(0, COLUMN_COUNT) for y in range(0, ROW_COUNT)
     )
