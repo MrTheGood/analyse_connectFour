@@ -25,13 +25,14 @@ def num_input(text, min, max):
     inp = input()
     while not inp.isdigit() or int(inp) < min or int(inp) > max:
         print("Invalid input! Should be a number with a min value of", min, "and max", max)
-        inp = input(text)
+        print(text)
+        inp = input()
     return int(inp)
 
 
-COLUMN_COUNT = num_input("How many columns? (default 7)", 1, 20)
-ROW_COUNT = num_input("How many rows? (default 6)", 1, 20)
-SIZE = SCREENWIDTH, SCREENHEIGHT = 72 * COLUMN_COUNT, 72 * ROW_COUNT
+COLUMN_COUNT = num_input("How many columns? (default 7)", 2, 20)
+ROW_COUNT = num_input("How many rows? (default 6)", 2, 20)
+SIZE = SCREENWIDTH, SCREENHEIGHT = 60 + 65 * COLUMN_COUNT, 60 + 65 * ROW_COUNT
 
 WIN_CONDITION = num_input("How many in a row to win? (default 4)", 1,
                           COLUMN_COUNT if (COLUMN_COUNT > ROW_COUNT) else ROW_COUNT)
