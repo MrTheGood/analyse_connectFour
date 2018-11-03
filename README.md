@@ -1,6 +1,11 @@
 # analyse_connectFour
 My implementation of a school project
 
+# Installation
+1. Git clone
+2. [Install PyGame](https://www.pygame.org/wiki/GettingStarted)
+3. Run main.py
+
 # Licence
    Copyright 2018 Maarten de Goede
 
