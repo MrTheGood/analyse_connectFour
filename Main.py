@@ -35,7 +35,7 @@ SIZE = SCREENWIDTH, SCREENHEIGHT = 60 + 65 * COLUMN_COUNT, 60 + 65 * ROW_COUNT
 
 WIN_CONDITION = num_input("How many in a row to win? (default 4)", 1,
                           COLUMN_COUNT if (COLUMN_COUNT > ROW_COUNT) else ROW_COUNT)
-MAX_PLAYERS = num_input("How many players? (default 2)", 2, 7)
+PLAYER_COUNT = num_input("How many players? (default 2)", 2, 7)
 
 
 class Tile(pygame.sprite.Sprite):
@@ -67,9 +67,13 @@ class Tile(pygame.sprite.Sprite):
         )
 
     def set_player(self, p):
+        global CURRENT_PLAYER
         if p in range(0, len(self.images)):
             self.player = p
             self.image = self.images[self.player]
+            check_win(self)
+            CURRENT_PLAYER = (CURRENT_PLAYER % PLAYER_COUNT) + 1
+            print("Next turn: Player ", CURRENT_PLAYER)
         else:
             raise ValueError("Unexpected value type: " + type(p))
 
@@ -83,21 +87,19 @@ class Tile(pygame.sprite.Sprite):
             if tile.player == 0:
                 tile.set_player(CURRENT_PLAYER)
 
-                # \
-                check_win([t for t in GAME_BOARD if t.x + t.y == tile.x + tile.y])
-                # /
-                check_win([t for t in GAME_BOARD if t.x - t.y == tile.x - tile.y])
-                # |
-                check_win([t for t in GAME_BOARD if t.x == tile.x])
-                # -
-                check_win([t for t in GAME_BOARD if t.y == tile.y])
 
-                CURRENT_PLAYER = (CURRENT_PLAYER % MAX_PLAYERS) + 1
-                print("Next turn: Player ", CURRENT_PLAYER)
-                break
+def check_win(from_tile):
+    # \
+    check_win_row([t for t in GAME_BOARD if t.x + t.y == from_tile.x + from_tile.y])
+    # /
+    check_win_row([t for t in GAME_BOARD if t.x - t.y == from_tile.x - from_tile.y])
+    # |
+    check_win_row([t for t in GAME_BOARD if t.x == from_tile.x])
+    # -
+    check_win_row([t for t in GAME_BOARD if t.y == from_tile.y])
 
 
-def check_win(tiles):
+def check_win_row(tiles):
     x = 0
     for t in tiles:
         if t.player == CURRENT_PLAYER:
