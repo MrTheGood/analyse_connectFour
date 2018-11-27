@@ -209,14 +209,27 @@ class MinimaxAIPlayer(Player):
         # Don't count rows that don't matter
         if len(row) < WIN_CONDITION:
             return 0
+
         score = 0
-        for t in row:
-            if t["player"] == self.p:
-                score = score + 10
-            elif t["player"] == 0:
-                score = score
+        for p in range(0, PLAYER_COUNT):
+            in_a_row = 0
+            possible_in_a_row = 0
+            for t in row:
+                if t["player"] == p:
+                    in_a_row = in_a_row + 1
+                elif t["player"] == 0:
+                    possible_in_a_row = possible_in_a_row + 1
+                elif possible_in_a_row + in_a_row < WIN_CONDITION:
+                    possible_in_a_row = 0
+                    in_a_row = 0
+
+            p_score = 200000000000000 if in_a_row >= WIN_CONDITION else possible_in_a_row + (
+                    10 ^ int(in_a_row))
+            if p == self.p:
+                score = score + p_score
             else:
-                score = score - 10
+                score = score - p_score
+
         return score
 
 
