@@ -117,7 +117,7 @@ class HumanPlayer(Player):
     """Uses default implementations"""
 
 
-MINIMAX_LOOK_AHEAD = 5
+MINIMAX_LOOK_AHEAD = 3
 
 
 class MinimaxAIPlayer(Player):
@@ -227,11 +227,12 @@ class MinimaxAIPlayer(Player):
                     possible_in_a_row = 0
                     in_a_row = 0
 
-            p_score = 200000000000000 if in_a_row >= WIN_CONDITION else possible_in_a_row + (
-                    10 ^ int(in_a_row))
+            p_score = possible_in_a_row + (10 * in_a_row)
             if p == self.p:
                 score = score + p_score
             else:
+                if in_a_row >= WIN_CONDITION:
+                    return -math.inf
                 score = score - p_score
 
         return score
