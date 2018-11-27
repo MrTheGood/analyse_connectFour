@@ -41,6 +41,7 @@ def bool_input(text, true, false):
     return inp == true
 
 
+IS_PLAYING = True
 COLUMN_COUNT = num_input("How many columns? (default 7)", 2, 20)
 ROW_COUNT = num_input("How many rows? (default 6)", 2, 20)
 SIZE = SCREENWIDTH, SCREENHEIGHT = 60 + 65 * COLUMN_COUNT, 60 + 65 * ROW_COUNT
@@ -80,13 +81,14 @@ class Tile(pygame.sprite.Sprite):
         )
 
     def set_player(self, p):
-        global CURRENT_PLAYER, PLAYERS
+        global CURRENT_PLAYER, PLAYERS, IS_PLAYING
         if p in range(0, len(self.images)):
             self.player = p
             self.image = self.images[self.player]
             check_win(self)
-            CURRENT_PLAYER = (CURRENT_PLAYER % PLAYER_COUNT) + 1
-            print("Next turn: Player ", CURRENT_PLAYER)
+            if IS_PLAYING:
+                CURRENT_PLAYER = (CURRENT_PLAYER % PLAYER_COUNT) + 1
+                print("Next turn: Player ", CURRENT_PLAYER)
         else:
             raise ValueError("Unexpected value type: " + type(p))
 
@@ -114,11 +116,8 @@ class Player:
 class HumanPlayer(Player):
     """Uses default implementations"""
 
-    def move(self):
-        print(".")
 
-
-MINIMAX_LOOK_AHEAD = 6
+MINIMAX_LOOK_AHEAD = 5
 
 
 class MinimaxAIPlayer(Player):
@@ -126,16 +125,21 @@ class MinimaxAIPlayer(Player):
     def __init__(self, p):
         super().__init__(p)
         self.board = []
+        self.is_moving = False
 
     def move(self):
         """Uses a Minimax Search algorithm to decide HOW TO BEST OVERTHROW STUPID INFERIOR HUMANS IN THE ULTIMATE GAME OF CONNECTFOUR"""
         global GAME_BOARD, MINIMAX_LOOK_AHEAD
+        if self.is_moving:
+            return
+        self.is_moving = True
         self.board = [{"x": t.x, "y": t.y, "player": t.player} for t in GAME_BOARD]
 
         move = self.minimax(MINIMAX_LOOK_AHEAD, self.p)
         tile = [t for t in GAME_BOARD if t.x == move[1]][0]
         print("Computer", self.p + 1, "chose tile", tile.y)
         tile.on_click()
+        self.is_moving = False
 
     def minimax(self, look_ahead, player):
         global PLAYER_COUNT
@@ -245,14 +249,14 @@ def check_win(from_tile):
 
 
 def check_win_row(tiles):
+    global IS_PLAYING
     x = 0
     for t in tiles:
         if t.player == CURRENT_PLAYER:
             x = x + 1
             if x >= WIN_CONDITION:
                 print("Player", CURRENT_PLAYER, "has won! Congrats!")
-                pygame.quit()
-                quit()
+                IS_PLAYING = False
         else:
             x = 0
 
@@ -270,7 +274,6 @@ def init_game_board():
             PLAYERS.append(HumanPlayer(i))
 
     print("First turn: Player 1")
-    PLAYERS[0].move()
 
 
 def get_tile_by_x(x):
@@ -286,7 +289,7 @@ def get_tile_by_pos(x, y):
 
 
 def main():
-    global SCREEN, FPS_CLOCK
+    global SCREEN, FPS_CLOCK, IS_PLAYING
     pygame.init()
     FPS_CLOCK = pygame.time.Clock()
     SCREEN = pygame.display.set_mode(SIZE)
@@ -296,19 +299,21 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-                if isinstance(PLAYERS[CURRENT_PLAYER - 1], HumanPlayer):
+                if IS_PLAYING and isinstance(PLAYERS[CURRENT_PLAYER - 1], HumanPlayer):
                     [s.on_click() for s in GAME_BOARD if s.rect.collidepoint(pos)]
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
                 break
-
         SCREEN.fill(BACKGROUND_COLOR)
         GAME_BOARD.draw(SCREEN)
         GAME_BOARD.update()
         pygame.display.update()
         FPS_CLOCK.tick(FPS)
-        PLAYERS[CURRENT_PLAYER - 1].move()
+
+        if IS_PLAYING:
+            print("still playing...")
+            PLAYERS[CURRENT_PLAYER - 1].move()
 
 
 if __name__ == '__main__':
