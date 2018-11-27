@@ -124,15 +124,17 @@ MINIMAX_LOOK_AHEAD = 6
 class MinimaxAIPlayer(Player):
 
     def __init__(self, p):
-        global GAME_BOARD
         super().__init__(p)
-        self.board = [{"x": t.x, "y": t.y, "player": t.player} for t in GAME_BOARD]
+        self.board = []
 
     def move(self):
         """Uses a Minimax Search algorithm to decide HOW TO BEST OVERTHROW STUPID INFERIOR HUMANS IN THE ULTIMATE GAME OF CONNECTFOUR"""
         global GAME_BOARD, MINIMAX_LOOK_AHEAD
-        tile = [t for t in GAME_BOARD if t.y == (self.minimax(MINIMAX_LOOK_AHEAD, self.p)[1])][0]
-        print("Computer", self.p, "chose tile", tile.y)
+        self.board = [{"x": t.x, "y": t.y, "player": t.player} for t in GAME_BOARD]
+
+        move = self.minimax(MINIMAX_LOOK_AHEAD, self.p)
+        tile = [t for t in GAME_BOARD if t.x == move[1]][0]
+        print("Computer", self.p + 1, "chose tile", tile.y)
         tile.on_click()
 
     def minimax(self, look_ahead, player):
@@ -165,15 +167,20 @@ class MinimaxAIPlayer(Player):
         return best_score, best_x
 
     def find_tile(self, cond):
-        return [t for t in self.board if cond(t)][0]
+        return self.find_tiles(cond)[0]
+
+    def find_tiles(self, cond):
+        return [t for t in self.board if cond(t)]
 
     def generate_moves(self):
-        global ROW_COUNT
+        global COLUMN_COUNT
         moves = []
-        for y in range(0, ROW_COUNT, 1):
-            moves.append(self.find_tile(
-                lambda t: t["y"] == y and t["player"] == 0
-            ))
+        for x in range(0, COLUMN_COUNT, 1):
+            move = sorted(self.find_tiles(
+                lambda t: t["x"] == x and t["player"] == 0
+            ), key=lambda t: t["y"])
+            if move:
+                moves.append(move[0])
         return moves
 
     def evaluate(self):
