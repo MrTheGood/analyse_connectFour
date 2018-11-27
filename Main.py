@@ -170,11 +170,11 @@ class MinimaxAIPlayer(Player):
     def generate_moves(self):
         global ROW_COUNT
         moves = []
-        for y in range(ROW_COUNT - 1, -1, -1):
+        for y in range(0, ROW_COUNT, 1):
             moves.append(self.find_tile(
                 lambda t: t["y"] == y and t["player"] == 0
             ))
-            return moves
+        return moves
 
     def evaluate(self):
         global ROW_COUNT
