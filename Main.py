@@ -137,7 +137,7 @@ class MinimaxAIPlayer(Player):
 
         move = self.minimax(MINIMAX_LOOK_AHEAD, self.p)
         tile = [t for t in GAME_BOARD if t.x == move[1]][0]
-        print("Computer", self.p + 1, "chose tile", tile.y)
+        print("Computer", self.p, "chose tile", tile.y)
         tile.on_click()
         self.is_moving = False
 
@@ -156,13 +156,13 @@ class MinimaxAIPlayer(Player):
                     "player"] = player
                 if player == self.p:
                     # maximizing player
-                    current_score = self.minimax(look_ahead - 1, (player + 1) % PLAYER_COUNT)[0]
+                    current_score = self.minimax(look_ahead - 1, (player % PLAYER_COUNT) + 1)[0]
                     if current_score > best_score:
                         best_score = current_score
                         best_x = move["x"]
                 else:
                     # minimizing player
-                    current_score = self.minimax(look_ahead - 1, (player + 1) % PLAYER_COUNT)[0]
+                    current_score = self.minimax(look_ahead - 1, (player % PLAYER_COUNT) + 1)[0]
                     if current_score < best_score:
                         best_score = current_score
                         best_x = move["x"]
@@ -215,7 +215,7 @@ class MinimaxAIPlayer(Player):
             return 0
 
         score = 0
-        for p in range(0, PLAYER_COUNT):
+        for p in range(1, PLAYER_COUNT + 1):
             in_a_row = 0
             possible_in_a_row = 0
             for t in row:
@@ -267,7 +267,7 @@ def init_game_board():
         Tile(x=x, y=y) for x in range(0, COLUMN_COUNT) for y in range(0, ROW_COUNT)
     )
 
-    for i in range(0, PLAYER_COUNT):
+    for i in range(1, PLAYER_COUNT + 1):
         if bool_input("Is this player a computer or human?", "computer", "human"):
             PLAYERS.append(MinimaxAIPlayer(i))
         else:
