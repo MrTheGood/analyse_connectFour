@@ -13,6 +13,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import math
+
 import pygame
 
 BACKGROUND_COLOR = (27, 109, 167)
@@ -149,13 +150,13 @@ class MinimaxAIPlayer(Player):
                     "player"] = player
                 if player == self.p:
                     # maximizing player
-                    current_score = self.minimax(look_ahead - 1, player % PLAYER_COUNT + 1)[0]
+                    current_score = self.minimax(look_ahead - 1, (player + 1) % PLAYER_COUNT)[0]
                     if current_score > best_score:
                         best_score = current_score
                         best_x = move["x"]
                 else:
                     # minimizing player
-                    current_score = self.minimax(look_ahead - 1, player % PLAYER_COUNT + 1)[0]
+                    current_score = self.minimax(look_ahead - 1, (player + 1) % PLAYER_COUNT)[0]
                     if current_score < best_score:
                         best_score = current_score
                         best_x = move["x"]
