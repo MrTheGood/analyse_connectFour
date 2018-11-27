@@ -312,7 +312,6 @@ def main():
         FPS_CLOCK.tick(FPS)
 
         if IS_PLAYING:
-            print("still playing...")
             PLAYERS[CURRENT_PLAYER - 1].move()
 
 
