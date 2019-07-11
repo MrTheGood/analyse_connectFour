@@ -117,7 +117,12 @@ class HumanPlayer(Player):
     """Uses default implementations"""
 
 
-MINIMAX_LOOK_AHEAD = 3
+MINIMAX_LOOK_AHEAD = 6
+
+
+# TODO: PERFORMANCE IMPROVEMENTS: MULTITHREADING
+# TODO: PERFORMANCE IMPROVEMENTS: ONLY INCLUDE ACTUAL POSSIBLE WIN ROWS IN WIN CHECK
+# TODO: SINGLE LOOP FOR ALL CHECKS FOR PERFORMANCE IMPROVEMENTS
 
 
 class MinimaxAIPlayer(Player):
@@ -148,7 +153,7 @@ class MinimaxAIPlayer(Player):
         best_score = -math.inf if player == self.p else math.inf
         best_x = -1
 
-        if not next_moves or look_ahead == 0:
+        if not next_moves or look_ahead == 0:  # or if a player has won
             best_score = self.evaluate()
         else:
             for move in next_moves:
@@ -191,24 +196,15 @@ class MinimaxAIPlayer(Player):
         global ROW_COUNT
         score = 0
         for tile in self.board:
+            # Only evaluate non-diagonal rows for now
             if tile["x"] == 0:
                 score = score + self.evaluate_row([t for t in self.board if t["y"] == tile["y"]])
-                score = score + self.evaluate_row(
-                    [t for t in self.board if t["y"] + t["x"] == tile["y"] + tile["x"]])
-                score = score + self.evaluate_row(
-                    [t for t in self.board if t["y"] - t["x"] == tile["y"] - tile["x"]])
             elif tile["y"] == 0:
                 score = score + self.evaluate_row([t for t in self.board if t["x"] == tile["x"]])
-                score = score + self.evaluate_row(
-                    [t for t in self.board if t["y"] + t["x"] == tile["y"] + tile["x"]])
-            elif tile["y"] == ROW_COUNT - 1:
-                score = score + self.evaluate_row(
-                    [t for t in self.board if t["y"] - t["x"] == tile["y"] - tile["x"]])
         return score
 
     def evaluate_row(self, row):
         """Note that this evaluation could be greatly improved and is just a prototype for now"""
-        # TODO: Improve evaluation to keep in mind blocking, multiple opponents win conditions, etc
         global WIN_CONDITION
         # Don't count rows that don't matter
         if len(row) < WIN_CONDITION:
@@ -223,12 +219,14 @@ class MinimaxAIPlayer(Player):
                     in_a_row = in_a_row + 1
                 elif t["player"] == 0:
                     possible_in_a_row = possible_in_a_row + 1
-                elif possible_in_a_row + in_a_row < WIN_CONDITION:
+                else:
                     possible_in_a_row = 0
                     in_a_row = 0
 
             p_score = possible_in_a_row + (10 * in_a_row)
             if p == self.p:
+                if in_a_row >= WIN_CONDITION:
+                    score = score ^ score
                 score = score + p_score
             else:
                 if in_a_row >= WIN_CONDITION:
